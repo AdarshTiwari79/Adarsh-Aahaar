@@ -1,17 +1,20 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { SignupInputState, userSignupSchema } from "@/schema/userSchema";
 import { Separator } from "@radix-ui/react-separator";
 import { Contact2, Loader, LockKeyhole, Mail, User2 } from "lucide-react";
 import { ChangeEvent, FormEvent, useState } from "react";
 import { Link } from "react-router-dom";
 
 const Signup = () => {
-  type SignupInputState = {
-    fullname: string;
-    email: string;
-    password: string;
-    contact: string;
-  };
+  // type SignupInputState = {
+  //   fullname: string;
+  //   email: string;
+  //   password: string;
+  //   contact: string;
+  // };
+
+  // infering type from zod schema.
 
   const [input, setInput] = useState<SignupInputState>({
     fullname: "",
@@ -20,6 +23,8 @@ const Signup = () => {
     contact: "",
   });
 
+  const [errors, setErrors] = useState<Partial<SignupInputState>>({});
+
   const changeEventHandler = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setInput({ ...input, [name]: value });
@@ -27,7 +32,19 @@ const Signup = () => {
 
   const loginSubmitHandler = (e: FormEvent) => {
     e.preventDefault();
+
+    // form validation using zod
+    const result = userSignupSchema.safeParse(input);
+    if (!result.success) {
+      const fieldErrors = result.error.formErrors.fieldErrors;
+      setErrors(fieldErrors as Partial<SignupInputState>);
+      return;
+    }
+
+    // login api implementation
     console.log(input);
+    setErrors({});
+    setInput({ fullname: "", email: "", password: "", contact: "" });
   };
 
   const loading = false;
@@ -39,7 +56,7 @@ const Signup = () => {
         className="md:p-8 w-full max-w-md rounded-lg md:border border-gray-200 mx-4"
       >
         <div className="mb-4">
-          <h1 className="font-bold text-2xl">Adarsh Ahaar</h1>
+          <h1 className="text-center font-bold text-2xl">Adarsh Ahaar</h1>
         </div>
 
         <div className="relative mb-4">
@@ -52,6 +69,9 @@ const Signup = () => {
             className="pl-10 focus-visible:ring-1"
           />
           <User2 className="absolute inset-y-2 left-2 text-gray-500 pointer-events-none" />
+          {errors && (
+            <span className="text-xs text-red-500">{errors.fullname}</span>
+          )}
         </div>
 
         <div className="relative mb-4">
@@ -64,6 +84,9 @@ const Signup = () => {
             className="pl-10 focus-visible:ring-1"
           />
           <Mail className="absolute inset-y-2 left-2 text-gray-500 pointer-events-none" />
+          {errors && (
+            <span className="text-xs text-red-500">{errors.email}</span>
+          )}
         </div>
 
         <div className="relative mb-4">
@@ -76,6 +99,9 @@ const Signup = () => {
             className="pl-10 focus-visible:ring-1"
           />
           <LockKeyhole className="absolute inset-y-2 left-2 text-gray-500 pointer-events-none" />
+          {errors && (
+            <span className="text-xs text-red-500">{errors.password}</span>
+          )}
         </div>
 
         <div className="relative mb-4">
@@ -88,9 +114,12 @@ const Signup = () => {
             className="pl-10 focus-visible:ring-1"
           />
           <Contact2 className="absolute inset-y-2 left-2 text-gray-500 pointer-events-none" />
+          {errors && (
+            <span className="text-xs text-red-500">{errors.contact}</span>
+          )}
         </div>
 
-        <div className="mb-10">
+        <div className="mb-7">
           {loading ? (
             <Button disabled className="w-full bg-orange hover:bg-hoverOrange">
               <Loader className="mr-2 h-4 w-4 animate-spin" />
@@ -108,7 +137,7 @@ const Signup = () => {
 
         <Separator />
 
-        <p className="mt-2">
+        <p className="mt-1 text-center">
           Already have an account?{" "}
           <Link to="/login" className="text-blue-500">
             Login
