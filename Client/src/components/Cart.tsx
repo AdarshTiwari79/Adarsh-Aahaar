@@ -78,7 +78,7 @@ const Cart = () => {
           </TableRow>
         </TableBody>
         <TableFooter>
-          <TableRow>
+          <TableRow className="text-2xl font-bold">
             <TableCell colSpan={5}>Total</TableCell>
             <TableCell className="text-right">₹80</TableCell>
           </TableRow>
