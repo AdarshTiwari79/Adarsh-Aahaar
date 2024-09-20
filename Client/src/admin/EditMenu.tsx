@@ -1,12 +1,16 @@
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
   DialogDescription,
+  DialogFooter,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { MenuFormSchema, menuSchema } from "@/schema/menuSchema";
+import { Loader2 } from "lucide-react";
 import {
   Dispatch,
   FormEvent,
@@ -20,22 +24,46 @@ const EditMenu = ({
   editOpen,
   setEditOpen,
 }: {
-  selectedMenu: any;
+  selectedMenu: MenuFormSchema;
   editOpen: boolean;
   setEditOpen: Dispatch<SetStateAction<boolean>>;
 }) => {
-  const [input, setInput] = useState<any>({
+  const loading = false;
+  const [error, setError] = useState<Partial<MenuFormSchema>>({});
+  const [input, setInput] = useState<MenuFormSchema>({
     name: "",
     description: "",
     price: 0,
     image: undefined,
   });
 
-  const submitHandler = (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+  const changeEventHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value, type } = e.target;
+    setInput({ ...input, [name]: type === "number" ? Number(value) : value });
   };
 
-  useEffect(() => {});
+  const submitHandler = (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    // zod validation
+    const result = menuSchema.safeParse(input);
+    if (!result.success) {
+      const fieldErrors = result.error.formErrors.fieldErrors;
+
+      setError(fieldErrors as Partial<MenuFormSchema>);
+      return;
+    }
+    // api implementation
+  };
+
+  useEffect(() => {
+    setInput({
+      name: selectedMenu?.name || "",
+      description: selectedMenu?.description || "",
+      price: selectedMenu?.price || 0,
+      image: undefined,
+    });
+  }, [selectedMenu]);
 
   return (
     <Dialog open={editOpen} onOpenChange={setEditOpen}>
@@ -56,6 +84,11 @@ const EditMenu = ({
               placeholder="Enter menu name"
               onChange={changeEventHandler}
             />
+            {error && (
+              <span className="text-xs font-medium text-red-600">
+                {error.name}
+              </span>
+            )}
           </div>
 
           <div className="space-y-2">
@@ -67,6 +100,11 @@ const EditMenu = ({
               onChange={changeEventHandler}
               placeholder="Add menu description"
             />
+            {error && (
+              <span className="text-xs font-medium text-red-600">
+                {error.description}
+              </span>
+            )}
           </div>
 
           <div className="space-y-2">
@@ -78,6 +116,11 @@ const EditMenu = ({
               onChange={changeEventHandler}
               placeholder="Enter menu price"
             />
+            {error && (
+              <span className="text-xs font-medium text-red-600">
+                {error.price}
+              </span>
+            )}
           </div>
 
           <div className="space-y-2">
@@ -93,6 +136,11 @@ const EditMenu = ({
               }
               placeholder="Enter menu image"
             />
+            {error && (
+              <span className="text-xs font-medium text-red-600">
+                {error.image?.name}
+              </span>
+            )}
           </div>
 
           <DialogFooter className="mt-5">
