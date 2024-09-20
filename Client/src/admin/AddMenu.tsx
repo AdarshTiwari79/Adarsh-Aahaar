@@ -14,6 +14,7 @@ import { Label } from "@/components/ui/label";
 import { Loader2, Plus } from "lucide-react";
 import { FormEvent, useState } from "react";
 import EditMenu from "./EditMenu";
+import { MenuFormSchema, menuSchema } from "@/schema/menuSchema";
 
 const menus = [
   {
@@ -25,7 +26,7 @@ const menus = [
 ];
 
 const AddMenu = () => {
-  const [input, setInput] = useState<any>({
+  const [input, setInput] = useState<MenuFormSchema>({
     name: "",
     description: "",
     price: 0,
@@ -37,6 +38,7 @@ const AddMenu = () => {
   const [editOpen, setEditOpen] = useState<boolean>(false);
   const [open, setOpen] = useState<boolean>(false);
   const loading = false;
+  const [error, setError] = useState<Partial<MenuFormSchema>>({});
 
   const changeEventHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, type } = e.target;
@@ -45,7 +47,16 @@ const AddMenu = () => {
 
   const submitHandler = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    console.log(input);
+
+    // zod validation
+    const result = menuSchema.safeParse(input);
+    if (!result.success) {
+      const fieldErrors = result.error.formErrors.fieldErrors;
+
+      setError(fieldErrors as Partial<MenuFormSchema>);
+      return;
+    }
+    // api implementation
   };
 
   return (
@@ -78,6 +89,11 @@ const AddMenu = () => {
                   placeholder="Enter menu name"
                   onChange={changeEventHandler}
                 />
+                {error && (
+                  <span className="text-xs font-medium text-red-600">
+                    {error.name}
+                  </span>
+                )}
               </div>
 
               <div className="space-y-2">
@@ -89,6 +105,11 @@ const AddMenu = () => {
                   onChange={changeEventHandler}
                   placeholder="Add menu description"
                 />
+                {error && (
+                  <span className="text-xs font-medium text-red-600">
+                    {error.description}
+                  </span>
+                )}
               </div>
 
               <div className="space-y-2">
@@ -100,6 +121,11 @@ const AddMenu = () => {
                   onChange={changeEventHandler}
                   placeholder="Enter menu price"
                 />
+                {error && (
+                  <span className="text-xs font-medium text-red-600">
+                    {error.price}
+                  </span>
+                )}
               </div>
 
               <div className="space-y-2">
@@ -115,6 +141,11 @@ const AddMenu = () => {
                   }
                   placeholder="Enter menu image"
                 />
+                {error && (
+                  <span className="text-xs font-medium text-red-600">
+                    {error.image?.name || "Image is required"}
+                  </span>
+                )}
               </div>
 
               <DialogFooter className="mt-5">
