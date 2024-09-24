@@ -6,6 +6,7 @@ import cookieParser from "cookie-parser";
 import cors from "cors";
 import userRoute from "./routes/user.route";
 import restaurantRoute from "./routes/restaurant.route";
+import menuRoute from "./routes/menu.route";
 
 dotenv.config();
 
@@ -26,6 +27,7 @@ app.use(cors(corsOptions));
 // api
 app.use("/api/v1/user", userRoute);
 app.use("/api/v1/restaurant", restaurantRoute);
+app.use("/api/v1/menu", menuRoute);
 
 app.listen(PORT, () => {
   connectDB();
