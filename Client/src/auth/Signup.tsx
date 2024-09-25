@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { SignupInputState, userSignupSchema } from "@/schema/userSchema";
+import { useUserStore } from "@/store/useUserStore";
 import { Separator } from "@radix-ui/react-separator";
 import { Contact2, Loader, LockKeyhole, Mail, User2 } from "lucide-react";
 import { ChangeEvent, FormEvent, useState } from "react";
@@ -24,13 +25,14 @@ const Signup = () => {
   });
 
   const [errors, setErrors] = useState<Partial<SignupInputState>>({});
+  const { signup, loading } = useUserStore();
 
   const changeEventHandler = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setInput({ ...input, [name]: value });
   };
 
-  const loginSubmitHandler = (e: FormEvent) => {
+  const loginSubmitHandler = async (e: FormEvent) => {
     e.preventDefault();
 
     // form validation using zod
@@ -42,12 +44,8 @@ const Signup = () => {
     }
 
     // login api implementation
-    console.log(input);
-    setErrors({});
-    setInput({ fullname: "", email: "", password: "", contact: "" });
+    await signup(input);
   };
-
-  const loading = false;
 
   return (
     <div className="flex items-center justify-center min-h-screen">
