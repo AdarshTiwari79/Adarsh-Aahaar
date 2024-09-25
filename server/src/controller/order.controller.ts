@@ -55,7 +55,7 @@ export const createCheckoutSession = async (req: Request, res: Response) => {
       });
     }
 
-    const order = new Order({
+    const order: any = new Order({
       restaurant: restaurant._id,
       user: req.id,
       deliveryDetails: checkoutSessionRequest.deliveryDetails,
