@@ -128,7 +128,6 @@ export const useUserStore = create<UserState>()(
 
           if (response.data.success) {
             set({
-              loading: false,
               user: response.data.user,
               isAuthenticated: true,
               isCheckingAuth: false,
@@ -136,7 +135,6 @@ export const useUserStore = create<UserState>()(
           }
         } catch (error) {
           set({
-            loading: false,
             isAuthenticated: false,
             isCheckingAuth: false,
           });
