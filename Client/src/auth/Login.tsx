@@ -5,7 +5,7 @@ import { useUserStore } from "@/store/useUserStore";
 import { Separator } from "@radix-ui/react-separator";
 import { Loader, LockKeyhole, Mail } from "lucide-react";
 import { ChangeEvent, FormEvent, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const Login = () => {
   // There are two ways to define the type in typescript. (1) using interface. (2) using type
@@ -27,6 +27,8 @@ const Login = () => {
 
   const [errors, setErrors] = useState<Partial<LoginInputState>>({});
 
+  const navigate = useNavigate();
+
   const { loading, login } = useUserStore();
 
   const changeEventHandler = (e: ChangeEvent<HTMLInputElement>) => {
@@ -43,7 +45,12 @@ const Login = () => {
       setErrors(fieldErrors as Partial<LoginInputState>);
       return;
     }
-    await login(input);
+    try {
+      await login(input);
+      navigate("/");
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   return (
