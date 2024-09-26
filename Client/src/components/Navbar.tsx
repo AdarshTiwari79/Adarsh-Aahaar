@@ -40,7 +40,7 @@ import { Separator } from "./ui/separator";
 import { useUserStore } from "@/store/useUserStore";
 
 const Navbar = () => {
-  const { user, loading } = useUserStore();
+  const { user, loading, logout } = useUserStore();
 
   return (
     <div className="max-w-7xl mx-auto">
@@ -114,7 +114,10 @@ const Navbar = () => {
                   </Loader2>
                 </Button>
               ) : (
-                <Button className="bg-orange hover:bg-hoverOrange">
+                <Button
+                  onClick={logout}
+                  className="bg-orange hover:bg-hoverOrange"
+                >
                   Logout
                 </Button>
               )}
@@ -133,7 +136,7 @@ const Navbar = () => {
 export default Navbar;
 
 const MobileNavbar = () => {
-  const { user } = useUserStore();
+  const { user, loading, logout } = useUserStore();
   return (
     <Sheet>
       <SheetTrigger asChild>
@@ -221,12 +224,20 @@ const MobileNavbar = () => {
           </div>
 
           <SheetClose asChild>
-            <Button
-              type="submit"
-              className="bg-orange hover:bg-hoverOrange w-full"
-            >
-              Logout
-            </Button>
+            {loading ? (
+              <Button className="bg-orange hover:bg-hoverOrange">
+                <Loader2 className="mr-2 h-4 w-4 animate-spin">
+                  Please wait
+                </Loader2>
+              </Button>
+            ) : (
+              <Button
+                onClick={logout}
+                className="bg-orange hover:bg-hoverOrange"
+              >
+                Logout
+              </Button>
+            )}
           </SheetClose>
         </SheetFooter>
       </SheetContent>
