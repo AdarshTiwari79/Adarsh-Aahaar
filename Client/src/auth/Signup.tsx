@@ -5,7 +5,7 @@ import { useUserStore } from "@/store/useUserStore";
 import { Separator } from "@radix-ui/react-separator";
 import { Contact2, Loader, LockKeyhole, Mail, User2 } from "lucide-react";
 import { ChangeEvent, FormEvent, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const Signup = () => {
   // type SignupInputState = {
@@ -27,6 +27,8 @@ const Signup = () => {
   const [errors, setErrors] = useState<Partial<SignupInputState>>({});
   const { signup, loading } = useUserStore();
 
+  const navigate = useNavigate();
+
   const changeEventHandler = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setInput({ ...input, [name]: value });
@@ -44,7 +46,12 @@ const Signup = () => {
     }
 
     // login api implementation
-    await signup(input);
+    try {
+      await signup(input);
+      navigate("/verify-email");
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   return (
