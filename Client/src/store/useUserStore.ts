@@ -64,6 +64,35 @@ export const useUserStore = create<any>()(
           set({ loading: false });
         }
       },
+
+      verifyEmail: async (verificationCode: string) => {
+        try {
+          set({ loading: true });
+          const response = await axios.post(
+            `${API_END_POINT}/verify-email`,
+            { verificationCode },
+            {
+              headers: {
+                "Content-Type": "application/json",
+              },
+            }
+          );
+
+          if (response.data.success) {
+            toast.success(response.data.message);
+            set({
+              loading: false,
+              user: response.data.user,
+              isAuthenticated: true,
+            });
+          }
+
+          // return response.data;
+        } catch (error: any) {
+          set({ loading: false });
+          toast.error(error.response.data.message);
+        }
+      },
     }),
     {
       name: "user-name",
