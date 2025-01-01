@@ -5,6 +5,7 @@ import {
   RestaurantFormSchema,
   restaurantFromSchema,
 } from "@/schema/restaurantSchema";
+import { useRestaurantStore } from "@/store/useRestaurantStore";
 import { Loader2 } from "lucide-react";
 import { FormEvent, useState } from "react";
 
@@ -24,11 +25,10 @@ const Restaurant = () => {
   };
 
   const [errors, setErrors] = useState<Partial<RestaurantFormSchema>>({});
+  const { loading, restaurant, updateRestaurant, createRestaurant } =
+    useRestaurantStore();
 
-  const loading = false;
-  const restaurant = false;
-
-  const onSubmitHandler = (e: FormEvent<HTMLFormElement>) => {
+  const onSubmitHandler = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     const result = restaurantFromSchema.safeParse(input);
@@ -38,8 +38,28 @@ const Restaurant = () => {
       return;
     }
 
-    console.log(input);
-    // api implementation
+    try {
+      const formData = new FormData();
+      formData.append("restaurantName", input.restaurantName);
+      formData.append("city", input.city);
+      formData.append("country", input.country);
+      formData.append("deliveryTime", input.deliveryTime.toString());
+      formData.append("cuisines", JSON.stringify(input.cuisines));
+
+      if (input.imageFile) {
+        formData.append("imageFile", input.imageFile);
+      }
+
+      if (restaurant) {
+        // update restaurant
+        await updateRestaurant(formData);
+      } else {
+        // create restaurant
+        await createRestaurant(formData);
+      }
+    } catch (error: any) {
+      console.log(error);
+    }
   };
 
   return (
